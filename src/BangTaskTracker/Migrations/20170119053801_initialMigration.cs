@@ -16,7 +16,7 @@ namespace BangTaskTracker.Migrations
                     Taskid = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CompletedOn = table.Column<DateTime>(nullable: true),
-                    DateCreated = table.Column<DateTime>(nullable: false),
+                    DateCreated = table.Column<DateTime>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     TaskName = table.Column<string>(nullable: false),
                     TaskOrderStatus = table.Column<int>(nullable: false)

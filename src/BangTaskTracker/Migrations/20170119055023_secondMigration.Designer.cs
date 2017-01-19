@@ -8,8 +8,8 @@ using BangTaskTracker.Data;
 namespace BangTaskTracker.Migrations
 {
     [DbContext(typeof(TrackerContext))]
-    [Migration("20170119010540_initialMigration")]
-    partial class initialMigration
+    [Migration("20170119055023_secondMigration")]
+    partial class secondMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace BangTaskTracker.Migrations
 
                     b.Property<DateTime?>("CompletedOn");
 
-                    b.Property<DateTime>("DateCreated");
+                    b.Property<DateTime?>("DateCreated");
 
                     b.Property<string>("Description");
 

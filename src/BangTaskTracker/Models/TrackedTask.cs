@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,8 +23,10 @@ namespace BangTaskTracker.Models
         [Required]
         public OrderStatus TaskOrderStatus { get; set; }
 
-        public DateTime DateCreated { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? DateCreated { get; set; }
 
+        [DataType(DataType.Date)]
         public DateTime? CompletedOn { get; set; }
     }
 }

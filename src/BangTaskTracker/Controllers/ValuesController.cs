@@ -27,7 +27,7 @@ namespace BangTaskTracker.Controllers
             //return new string[] { "value1", "value2" };
             IQueryable<object> trackedTasks = from TrackedTask in context.TrackedTask select TrackedTask;
 
-            if(trackedTasks == null)
+            if (trackedTasks == null)
             {
                 return NotFound();
             }
@@ -47,7 +47,7 @@ namespace BangTaskTracker.Controllers
             try //here we will try to pull the one task by using a linq query matching the passed in id (from the http route) with the id of a single task id in the DB
             {
                 TrackedTask trackedTask = context.TrackedTask.Single(m => m.Taskid == id);
-                if(trackedTask == null)
+                if (trackedTask == null)
                 {
                     return NotFound(); //if it does not find the id, it will return not found
                 }
@@ -70,37 +70,83 @@ namespace BangTaskTracker.Controllers
                 return BadRequest(ModelState); //if invalid it will return badrequest
             }
             context.TrackedTask.Add(trackedTask); //if valid it will add the task to the context
-            try 
+            try
             {
                 context.SaveChanges(); //to add save the changes to the context to the DB
             }
-            catch(DbUpdateException)//if the try doesn't work, we'll catch the exception
+            catch (DbUpdateException)//if the try doesn't work, we'll catch the exception
             {
-                if(TrackedTaskExists(trackedTask.Taskid)) //if the task exists, 
+                if (TrackedTaskExists(trackedTask.Taskid)) //if the task exists, 
                 {
                     return new StatusCodeResult(StatusCodes.Status409Conflict); //we'll return an error saying there is a conflict
                 }
                 else
                 {
-                    throw;  
+                    throw;
                 }
             }
 
-            //return new OkObjectResult(trackedTask);
-            return CreatedAtRoute("GetTrackedTask", new { id = trackedTask.Taskid }, trackedTask); //this is not working. but it works as returne new OkObjectResult
-            //if it all works out we'll return the task that was just created
+            //return new OkObjectResult(trackedTask); //this one worked when the CreatedAtRoute was not working
+            return CreatedAtRoute("GetTrackedTask", new { id = trackedTask.Taskid }, trackedTask); //this did not work until I named the route in the get method above
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public IActionResult Put(int id, [FromBody]TrackedTask trackedTask)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (id != trackedTask.Taskid)
+            {
+                return BadRequest(ModelState);
+            }
+            context.TrackedTask.Update(trackedTask);
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                if (TrackedTaskExists(trackedTask.Taskid))
+                {
+                    return new StatusCodeResult(StatusCodes.Status409Conflict);
+                }
+                else
+                {
+                    throw;
+
+                }
+            }
+            return Ok(trackedTask);
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id, [FromBody]TrackedTask trackedTask)
         {
+            if(id != trackedTask.Taskid)
+            {
+                return BadRequest(ModelState);
+            }
+            context.TrackedTask.Remove(trackedTask);
+            try
+            {
+                context.SaveChanges();
+            }
+            catch
+            {
+                if (TrackedTaskExists(trackedTask.Taskid))
+                {
+                    return new StatusCodeResult(StatusCodes.Status409Conflict);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return Ok(trackedTask);
         }
 
         //here we are setting up a boolean for better exception handling

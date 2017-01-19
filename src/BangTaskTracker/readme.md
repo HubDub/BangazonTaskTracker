@@ -1,5 +1,8 @@
 Bangazon TaskTracker
 
+I created this API in Visual Studio using a SQL database. 
+
+PROJECT DIRECTIONS
 Table of Contents
 
 Prerequisites

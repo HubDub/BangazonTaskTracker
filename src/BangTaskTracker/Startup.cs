@@ -36,6 +36,16 @@ namespace BangTaskTracker
             //create database path and connect
             var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;";
             services.AddDbContext<TrackerContext>(options => options.UseSqlServer(connection));
+
+            //I didn't have Cors at first but I had a server error and thought this would make a difference. it did not.
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowDevelopmentEnvironment",
+                    builder => builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +53,7 @@ namespace BangTaskTracker
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+            app.UseCors("AllowDevelopmentEnvironment");
 
             app.UseMvc();
         }

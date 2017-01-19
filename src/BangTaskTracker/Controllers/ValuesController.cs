@@ -3,30 +3,92 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using BangTaskTracker.Models;
+using BangTaskTracker.Data;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace BangTaskTracker.Controllers
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        // GET api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private TrackerContext context;
+
+        public ValuesController(TrackerContext ctx)
         {
-            return new string[] { "value1", "value2" };
+            context = ctx;
+        }
+
+        // GET api/values - this will automatically get whatever values are in the DB when you navigate to this address. if there is nothing in the DB it should return a NotFound error. if there are tasks, it should return the task objects (or nothing if the table exists but there are no objects saved in it)
+        [HttpGet]
+        public IActionResult Get()
+        {
+            //return new string[] { "value1", "value2" };
+            IQueryable<object> trackedTasks = from TrackedTask in context.TrackedTask select TrackedTask;
+
+            if(trackedTasks == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(trackedTasks);
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        // when you type this address in it will run th e get method and just get the one object you are asking for. if that object does not exist it should return a NotFound error
+        [HttpGet("{id}", Name = "GetTrackedTask")]
+        public IActionResult Get([FromRoute]int id)
         {
-            return "value";
+            if (!ModelState.IsValid) //why are we checking model state on a get?
+            {
+                return BadRequest(ModelState); //if the model state is bad it will return badrequest
+            }
+            try //here we will try to pull the one task by using a linq query matching the passed in id (from the http route) with the id of a single task id in the DB
+            {
+                TrackedTask trackedTask = context.TrackedTask.Single(m => m.Taskid == id);
+                if(trackedTask == null)
+                {
+                    return NotFound(); //if it does not find the id, it will return not found
+                }
+                return Ok(trackedTask); //if it finds the task it will return it
+            }
+            catch (System.InvalidOperationException ex)
+            //if the try doesn't work, it will catch the error
+            {
+                return NotFound(ex);  //and then return the error
+            }
         }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        //when you post using the above http address it will run this method. it will pass the object you are posting into the method
+        public IActionResult Post([FromBody]TrackedTask trackedTask)
         {
+            if (!ModelState.IsValid)   //it will check the model state to make sure it's valid
+            {
+                return BadRequest(ModelState); //if invalid it will return badrequest
+            }
+            context.TrackedTask.Add(trackedTask); //if valid it will add the task to the context
+            try 
+            {
+                context.SaveChanges(); //to add save the changes to the context to the DB
+            }
+            catch(DbUpdateException)//if the try doesn't work, we'll catch the exception
+            {
+                if(TrackedTaskExists(trackedTask.Taskid)) //if the task exists, 
+                {
+                    return new StatusCodeResult(StatusCodes.Status409Conflict); //we'll return an error saying there is a conflict
+                }
+                else
+                {
+                    throw;  
+                }
+            }
+
+            //return new OkObjectResult(trackedTask);
+            return CreatedAtRoute("GetTrackedTask", new { id = trackedTask.Taskid }, trackedTask); //this is not working. but it works as returne new OkObjectResult
+            //if it all works out we'll return the task that was just created
         }
 
         // PUT api/values/5
@@ -39,6 +101,12 @@ namespace BangTaskTracker.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+        //here we are setting up a boolean for better exception handling
+        private bool TrackedTaskExists(int id)
+        {
+            return context.TrackedTask.Count(t => t.Taskid == id) > 0;
         }
     }
 }

@@ -7,6 +7,7 @@ using BangTaskTracker.Models;
 using BangTaskTracker.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using static BangTaskTracker.Models.TrackedTask;
 
 namespace BangTaskTracker.Controllers
 {
@@ -101,6 +102,11 @@ namespace BangTaskTracker.Controllers
             if (id != trackedTask.Taskid)
             {
                 return BadRequest(ModelState);
+            }
+            if (trackedTask.TaskOrderStatus == OrderStatus.Complete)
+                //this checks the value of the enum to see if it is complete
+            {
+                trackedTask.CompletedOn = DateTime.Now;
             }
             context.TrackedTask.Update(trackedTask);
             try

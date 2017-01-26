@@ -41,7 +41,7 @@ namespace BangTaskTracker.Controllers
         [HttpGet("{id}", Name = "GetTrackedTask")]
         public IActionResult Get([FromRoute]int id)
         {
-            if (!ModelState.IsValid) //why are we checking model state on a get?
+            if (!ModelState.IsValid) 
             {
                 return BadRequest(ModelState); //if the model state is bad it will return badrequest
             }
@@ -61,6 +61,26 @@ namespace BangTaskTracker.Controllers
             }
         }
 
+        //GET api/values/status/{status}
+        //this method will get the tasks based on what their status is
+        [HttpGet("status/{status}")]
+        public  IActionResult GetByStatus(int status)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                IQueryable<TrackedTask> trackedTasks = context.TrackedTask.Where(m => m.TaskOrderStatus == (TrackedTask.OrderStatus)status);
+                return Ok(trackedTasks); 
+            }
+            catch (System.InvalidOperationException ex)
+            {
+                return NotFound(ex);
+            }
+        }
+        
         // POST api/values
         [HttpPost]
         //when you post using the above http address it will run this method. it will pass the object you are posting into the method

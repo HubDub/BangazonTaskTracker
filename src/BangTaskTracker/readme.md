@@ -1,82 +1,26 @@
-Bangazon TaskTracker
+# Bangazon Task Tracker
 
-I created this API in Visual Studio using a SQL database. 
+This is a .NET Core 1.0 API built in Visual Studio in the language of C#, using the built in VS SQL database.
 
-PROJECT DIRECTIONS
-Table of Contents
+Using this API, you will be able to create, edit, view all tasks or view tasks based on task ID or status.
 
-Prerequisites
-What You Will Be Learning
-Requirements
-Resources
-Prerequisites
+It does not require a key to access. 
 
-.NET Core
+In order to use it, you will need to assure that you have installed:
+1. Visual Studio with C# extension
+2. .NET Core 
 
-.NET Core installed.
-Visual Studio Code, or Visual Studio Community Edition installed for existing Windows users.
-For Code users, install the C# extension.
-Yeoman, and the ASP.NET generator, installed
-.Net 4.5+
+Then, you will need to:
+1. clone or fork this project.
+2. Open Visual Studio, build, then open package manager console to add migrations (Add-Migration -initialMigration) and update database (Update-Database)
+3. run it
 
-Visual Studio Community Edition installed
-What You Will Be Learning
+In order to access the API from a front end you'll need to use these routes added to your local server address:
 
-Annotations, Routing and DI
-
-ASP.NET makes heavy use of annotations, routing and dependency injection to abstract away much of the heavy lifting that is required to build an API. By using these Magical Abstractions, far less coding and configuration is needed from an API developer.
-
-Models
-
-You will define models, which are abstractions to the actual database. The model defines a table, validations on the columns in the table, and also the relationship between tables.
-
-Migrations
-
-You will be using migrations in Entity Framework to handle changes and updates to your database.
-
-Controllers
-
-You will learn about what role a controller has in an API, how it uses models and validates a request against the model, and how to use LINQ to get data from your database.
-
-Requirements
-
-API
-
-Scaffold a basic WebAPI project.
-Define a model and API controller for a Task. The model should have at least the following fields:
-
-Field           Data Type                           Required
-Id              number                                  ✓
-Name            text                                    ✓
-Description     text    
-Status          enum (ToDo, InProgress, Complete)       ✓
-CompletedOn     date    
-
-Controllers may not return a view.
-
-API Consumers should be able to create a new task.
-API Consumers should be able to update a task's Name, Description and Status.
-Validation should be performed. Requests that fail validation should return the appropriate HTTP Status Code.
-The CompletedOn date should be updated to the current date when Status is set to complete.
-API Consumers should be able to request a list of tasks by priority.
-Generate API documentation with enough detail for a teammate to build a UI without any other knowledge.
-UI
-
-Create a simple Angular frontend.
-Users should be able to create a new task.
-Users should be able to update a task's Name, Description and Status.
-Validation should be performed.
-Users should be able to view a list of tasks by Priority.
-Users should be able to view a list of tasks by Status.
-Users should be able to view a list of tasks by CompletedOn.
-Resources
-
-Installing C# Extension for Code
-
-You install this extension by pressing F1 to open the VS Code palette. Type ext install to see the list of extensions. Select the C# extension.
-
-Installing Yeoman and the ASPNET Generator
-
-Both of these are npm packages, and global installations at that, so run this command in your terminal.
-
-npm install -g yo generator-aspnet
+GET all tasks: localHost:####/api/values
+GET one task by task ID: localHost:####/api/values/{taskID}
+GET all tasks of certain status: localHost:####/api/values/status/{status#}
+    The status of a task is ToDo (0), InProgress (1), or Complete (2)
+POST new task: localHost:####/api/values
+PUT task: localHost:####/api/values/{taskID}
+DELETE task: localHost:####/api/values/{taskID}

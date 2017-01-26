@@ -33,7 +33,7 @@ namespace BangTaskTracker
             // Add framework services.
             services.AddMvc();
 
-            //create database path and connect
+            //create database path in Visual Studio and connect
             var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;";
             services.AddDbContext<TrackerContext>(options => options.UseSqlServer(connection));
 
